@@ -86,7 +86,7 @@ public class ReledModule implements IXposedHookZygoteInit {
 	n.defaults = n.defaults & ~Notification.DEFAULT_LIGHTS;
 	n.ledOffMS = 2000;
 	n.ledOnMS = 1000;
-	n.flags = n.flags | Notification.DEFAULT_LIGHTS;
+	n.flags = n.flags | Notification.FLAG_SHOW_LIGHTS;
     }
 
     /**
