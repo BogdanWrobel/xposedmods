@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Xposed LED Recolor</string>
+    <string name="app_description">Attempts to remap LED notification colors per-app.</string>
+    <string name="title_item_list">Items</string>
+    <string name="title_item_detail">Item Detail</string>
+
+</resources>
