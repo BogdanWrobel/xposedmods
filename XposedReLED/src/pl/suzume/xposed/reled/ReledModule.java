@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 /**
@@ -16,6 +17,7 @@ import de.robv.android.xposed.XposedHelpers;
  * @author bogdan.wrobel
  */
 public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
+
     private static final String NOTIFY_METHOD = "notify";
     private static final String NOTIFICATION_MANAGER_PACKAGE = "android.app.NotificationManager";
     private static final Map<String, Integer> colors = new HashMap<String, Integer>() {
@@ -47,21 +49,21 @@ public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
 			changeLedColor(n, getNewLedColor(n));
 		    }
 		} catch (final Exception e) {
-		    Common.Log.error("Exception in hook: " + e.getMessage());
+		    logError("Exception in hook: " + e.getMessage());
 		}
 	    }
 	};
 	try {
 	    XposedHelpers.findAndHookMethod(NOTIFICATION_MANAGER_PACKAGE, null, NOTIFY_METHOD, int.class, Notification.class, hook);
-	    Common.Log.info("First hook set!");
+	    logInfo("First hook set!");
 	} catch (final Exception e) {
-	    Common.Log.error("Exception from first hook: " + e.getMessage());
+	    logError("Exception from first hook: " + e.getMessage());
 	}
 	try {
 	    XposedHelpers.findAndHookMethod(NOTIFICATION_MANAGER_PACKAGE, null, NOTIFY_METHOD, String.class, int.class, Notification.class, hook);
-	    Common.Log.info("Second hook set!");
+	    logInfo("Second hook set!");
 	} catch (final Exception e) {
-	    Common.Log.error("Exception from second hook: " + e.getMessage());
+	    logError("Exception from second hook: " + e.getMessage());
 	}
     }
 
@@ -74,8 +76,8 @@ public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
     private static void debugNotification(final Notification n) {
 	final boolean isDefault = (n.defaults & Notification.DEFAULT_LIGHTS) == Notification.DEFAULT_LIGHTS;
 	final boolean useLights = (n.flags & Notification.FLAG_SHOW_LIGHTS) == Notification.FLAG_SHOW_LIGHTS;
-	Common.Log.info("Notification from: " + n.contentIntent.getIntentSender().getCreatorPackage());
-	Common.Log.info("Color: " + Integer.toHexString(n.ledARGB) + ", default lights: " + isDefault + ", show lights: " + useLights);
+	XposedBridge.log("Notification from: " + n.contentIntent.getIntentSender().getCreatorPackage());
+	XposedBridge.log("Color: " + Integer.toHexString(n.ledARGB) + ", default lights: " + isDefault + ", show lights: " + useLights);
     }
 
     /**
@@ -163,5 +165,10 @@ public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
     private static Integer getNewLedColor(final Notification n) {
 	final String pkg = getSenderPackage(n);
 	return colors.containsKey(pkg) ? colors.get(pkg) : colors.get("");
+    }
+
+    @Override
+    public String tag() {
+	return "RELED";
     }
 }
