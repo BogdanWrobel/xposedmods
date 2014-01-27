@@ -23,14 +23,14 @@ public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
     private static final Map<String, Integer> colors = new HashMap<String, Integer>() {
 	private static final long serialVersionUID = -906537509425835169L;
 	{
-	    put("", Common.Const.Colors.CYAN);
-	    put("com.facebook.orca", Common.Const.Colors.BLUE);
-	    put("com.facebook.katana", Common.Const.Colors.BLUE);
-	    put("com.android.mms", Common.Const.Colors.WHITE);
-	    put("com.badoo.mobile.premium", Common.Const.Colors.MAGENTA);
-	    put("com.android.email", Common.Const.Colors.YELLOW);
-	    put("com.android.calendar", Common.Const.Colors.ORANGE);
-	    put("com.android.phone", Common.Const.Colors.PURPLE);
+	    put("", Colors.CYAN);
+	    put("com.facebook.orca", Colors.BLUE);
+	    put("com.facebook.katana", Colors.BLUE);
+	    put("com.android.mms", Colors.WHITE);
+	    put("com.badoo.mobile.premium", Colors.MAGENTA);
+	    put("com.android.email", Colors.YELLOW);
+	    put("com.android.calendar", Colors.ORANGE);
+	    put("com.android.phone", Colors.PURPLE);
 	}
     };
 
