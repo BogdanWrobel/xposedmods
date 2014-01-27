@@ -3,6 +3,7 @@ package pl.suzume.xposed.reled;
 import java.util.HashMap;
 import java.util.Map;
 
+import pl.suzume.xposed.XposedModule;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -14,7 +15,7 @@ import de.robv.android.xposed.XposedHelpers;
  * 
  * @author bogdan.wrobel
  */
-public class ReledModule implements IXposedHookZygoteInit {
+public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
     private static final String NOTIFY_METHOD = "notify";
     private static final String NOTIFICATION_MANAGER_PACKAGE = "android.app.NotificationManager";
     private static final Map<String, Integer> colors = new HashMap<String, Integer>() {
