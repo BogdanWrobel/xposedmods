@@ -28,6 +28,7 @@ public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
 	    put("com.facebook.orca", LedConfig.Colors.BLUE);
 	    put("com.facebook.katana", LedConfig.Colors.BLUE);
 	    put("com.android.mms", LedConfig.Colors.WHITE);
+	    put("com.sonyericsson.conversations", LedConfig.Colors.WHITE);
 	    put("com.badoo.mobile.premium", LedConfig.Colors.MAGENTA);
 	    put("com.android.email", LedConfig.Colors.YELLOW);
 	    put("com.android.calendar", LedConfig.Colors.ORANGE);
@@ -75,8 +76,8 @@ public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
      */
     private static void resetNotificationLights(final Notification n) {
 	n.defaults = n.defaults & ~Notification.DEFAULT_LIGHTS;
-	n.ledOffMS = 2000;
-	n.ledOnMS = 1000;
+	n.ledOffMS = 1000;
+	n.ledOnMS = 2000;
 	n.flags = n.flags | Notification.FLAG_SHOW_LIGHTS;
     }
 

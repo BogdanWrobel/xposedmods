@@ -1,6 +1,5 @@
 package pl.suzume.xposed;
 
-import de.robv.android.xposed.XposedBridge;
 
 /**
  * Base class for all Xposed modules
@@ -91,7 +90,7 @@ public abstract class XposedModule {
      *            desired error level
      */
     private void echo(final String s, final ErrorLevel level) {
-	XposedBridge.log((new StringBuffer().append(tag()).append(" [").append(level.toString()).append("]: ").append(s)).toString());
+	de.robv.android.xposed.XposedBridge.log((new StringBuffer().append(tag()).append(" [").append(level.toString()).append("]: ").append(s)).toString());
     }
 
     /**
