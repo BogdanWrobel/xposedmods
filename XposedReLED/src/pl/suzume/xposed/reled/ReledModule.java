@@ -21,18 +21,17 @@ public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
     private static final String TAG = "RELED";
     private static final String NOTIFY_METHOD = "notify";
     private static final String NOTIFICATION_MANAGER_PACKAGE = "android.app.NotificationManager";
-    private static final Map<String, Integer> colors = new HashMap<String, Integer>() {
+    private static final Map<String, LedConfig> colors = new HashMap<String, LedConfig>() {
 	private static final long serialVersionUID = -906537509425835169L;
 	{
-	    put("", LedConfig.Colors.CYAN);
-	    put("com.facebook.orca", LedConfig.Colors.BLUE);
-	    put("com.facebook.katana", LedConfig.Colors.BLUE);
-	    put("com.android.mms", LedConfig.Colors.WHITE);
-	    put("com.sonyericsson.conversations", LedConfig.Colors.WHITE);
-	    put("com.badoo.mobile.premium", LedConfig.Colors.MAGENTA);
-	    put("com.android.email", LedConfig.Colors.YELLOW);
-	    put("com.android.calendar", LedConfig.Colors.ORANGE);
-	    put("com.android.phone", LedConfig.Colors.PURPLE);
+	    put("com.facebook.orca", LedConfig.getInstance().color(LedConfig.Colors.BLUE));
+	    put("com.facebook.katana", LedConfig.getInstance().color(LedConfig.Colors.BLUE));
+	    put("com.android.mms", LedConfig.getInstance().color(LedConfig.Colors.WHITE));
+	    put("com.sonyericsson.conversations", LedConfig.getInstance().color(LedConfig.Colors.WHITE));
+	    put("com.badoo.mobile.premium", LedConfig.getInstance().color(LedConfig.Colors.MAGENTA));
+	    put("com.android.email", LedConfig.getInstance().color(LedConfig.Colors.YELLOW));
+	    put("com.android.calendar", LedConfig.getInstance().color(LedConfig.Colors.ORANGE));
+	    put("com.android.phone", LedConfig.getInstance().color(LedConfig.Colors.PURPLE));
 	}
     };
 
@@ -48,7 +47,7 @@ public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
 		    final Notification n = getNotification(param);
 		    final String pkg = getSenderPackage(param);
 		    if (isNotificationValid(n, pkg)) {
-			changeLedColor(n, getNewLedColor(pkg));
+			changeLedConfig(n, getNewLedConfig(pkg));
 		    }
 		} catch (final Exception e) {
 		    logError("Exception in hook: " + e.getMessage());
@@ -76,8 +75,6 @@ public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
      */
     private static void resetNotificationLights(final Notification n) {
 	n.defaults = n.defaults & ~Notification.DEFAULT_LIGHTS;
-	n.ledOffMS = 1000;
-	n.ledOnMS = 2000;
 	n.flags = n.flags | Notification.FLAG_SHOW_LIGHTS;
     }
 
@@ -151,9 +148,11 @@ public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
      * @param n
      * @param color
      */
-    private static void changeLedColor(final Notification n, final Integer color) {
+    private static void changeLedConfig(final Notification n, final LedConfig config) {
 	resetNotificationLights(n);
-	n.ledARGB = color;
+	n.ledARGB = config.getColor();
+	n.ledOffMS = config.getOffTime();
+	n.ledOnMS = config.getOnTime();
     }
 
     /**
@@ -162,8 +161,8 @@ public class ReledModule extends XposedModule implements IXposedHookZygoteInit {
      * @param n
      * @return mapped color
      */
-    private static Integer getNewLedColor(final String pkg) {
-	return colors.containsKey(pkg) ? colors.get(pkg) : colors.get("");
+    private static LedConfig getNewLedConfig(final String pkg) {
+	return colors.containsKey(pkg) ? colors.get(pkg) : LedConfig.getInstance();
     }
 
     @Override

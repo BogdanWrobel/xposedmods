@@ -15,14 +15,39 @@ public class LedConfig {
 	public static final Integer NONE = 0x00000000;
     }
 
+    private static class Defaults {
+	public static final Integer ON_TIME = Integer.valueOf(1000);
+	public static final Integer OFF_TIME = Integer.valueOf(2000);
+	public static final Integer COLOR = Colors.CYAN;
+    }
+
+    public static LedConfig getInstance() {
+	return new LedConfig();
+    }
+
     private Integer onTime;
     private Integer offTime;
     private Integer color;
 
-    public LedConfig(final Integer onTime, final Integer offTime, final Integer color) {
-	this.onTime = onTime;
-	this.offTime = offTime;
-	this.color = color;
+    public LedConfig() {
+	this.onTime = Defaults.ON_TIME;
+	this.offTime = Defaults.OFF_TIME;
+	this.color = Defaults.COLOR;
+    }
+
+    public LedConfig onTime(final Integer on) {
+	setOnTime(on);
+	return this;
+    }
+
+    public LedConfig offTime(final Integer off) {
+	setOffTime(off);
+	return this;
+    }
+
+    public LedConfig color(final Integer c) {
+	setColor(c);
+	return this;
     }
 
     public Integer getOnTime() {
