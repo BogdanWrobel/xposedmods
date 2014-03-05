@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Samsung Alt Symbols</string>
+    <string name="app_description">Enables secondary symbols display for Samsung keyboard</string>
+</resources>
