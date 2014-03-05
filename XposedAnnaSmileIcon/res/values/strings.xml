@@ -1,0 +1,6 @@
+<resources>
+
+    <string name="app_name">Xperia Smile Icon for Samsung</string>
+    <string name="app_description">Attempts to replace Samsung\'s SMS notification icon with that from Xperia.</string>
+
+</resources>
