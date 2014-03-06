@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import pl.suzume.xposed.XposedModule;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -17,7 +18,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
-public class XperiaQsHold implements IXposedHookLoadPackage {
+public class XperiaQsHold extends XposedModule implements IXposedHookLoadPackage {
 	private static final String TOOLS_MAIN = "com.sonymobile.systemui.statusbar.tools.ToolsMain";
 	public static final String PNAME = "com.android.systemui";
 	static final List<String> types = new ArrayList<String>();
@@ -58,28 +59,24 @@ public class XperiaQsHold implements IXposedHookLoadPackage {
 		} else {
 			intent.setAction(android.provider.Settings.ACTION_SETTINGS);
 		}
-		
+
 		try {
-			Object service = mContext.getSystemService("statusbar");
-            Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
-            Method collapse = statusbarManager.getMethod("collapsePanels");
-            collapse.setAccessible(true);
-            collapse.invoke(service);
+			final Object service = mContext.getSystemService("statusbar");
+			final Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+			final Method collapse = statusbarManager.getMethod("collapsePanels");
+			collapse.setAccessible(true);
+			collapse.invoke(service);
 			mContext.startActivity(intent);
-		}
-		catch (Exception e) {
+		} catch (final Exception e) {
 			Toast.makeText(mContext, "Error launching shortcut: " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 
 	@Override
-	public void handleLoadPackage(final LoadPackageParam lpparam)
-			throws Throwable {
+	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 		if (PNAME.equals(lpparam.packageName)) {
-			final Method reCreateButtons = XposedHelpers.findMethodExact(
-					TOOLS_MAIN, lpparam.classLoader, "reCreateButtons");
-			final Method create = XposedHelpers.findMethodExact(TOOLS_MAIN,
-					lpparam.classLoader, "create", String.class);
+			final Method reCreateButtons = XposedHelpers.findMethodExact(TOOLS_MAIN, lpparam.classLoader, "reCreateButtons");
+			final Method create = XposedHelpers.findMethodExact(TOOLS_MAIN, lpparam.classLoader, "create", String.class);
 
 			XposedBridge.hookMethod(create, new XC_MethodHook() {
 				@Override
@@ -115,5 +112,10 @@ public class XperiaQsHold implements IXposedHookLoadPackage {
 				}
 			});
 		}
+	}
+
+	@Override
+	public String tag() {
+		return "XperiaQSHold";
 	}
 }

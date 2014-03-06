@@ -11,10 +11,9 @@ public class XperiaMultiMini implements IXposedHookLoadPackage {
 	@Override
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 		if (PNAME.equals(lpparam.packageName)) {
-			XposedHelpers.findAndHookMethod("com.sony.smallapp.managerservice.SmallAppManagerService",
-					lpparam.classLoader, "init", new XC_MethodHook() {
+			XposedHelpers.findAndHookMethod("com.sony.smallapp.managerservice.SmallAppManagerService", lpparam.classLoader, "init", new XC_MethodHook() {
 				@Override
-				protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+				protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
 					XposedHelpers.setBooleanField(param.thisObject, "mAllowMultiple", true);
 				}
 			});
