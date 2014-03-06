@@ -19,10 +19,10 @@ public class SetFlags extends XposedModule implements IXposedHookInitPackageReso
 		if (TARGET_PKG.equals(resparam.packageName)) {
 			logInfo("Package found!");
 			try {
-				resparam.res.setReplacement(TARGET_PKG, "bool", "enable_stage_icon_labels", Boolean.TRUE);
+				// resparam.res.setReplacement(TARGET_PKG, "bool", "enable_stage_icon_labels", Boolean.TRUE);
 				resparam.res.setReplacement(TARGET_PKG, "bool", "autoRotate", Boolean.TRUE);
-				resparam.res.setReplacement(TARGET_PKG, "bool", "enable_desktop_multi_line_labels", Boolean.TRUE);
-				resparam.res.setReplacement(TARGET_PKG, "bool", "desktop_pagination_autohide", Boolean.TRUE);
+				// resparam.res.setReplacement(TARGET_PKG, "bool", "enable_desktop_multi_line_labels", Boolean.TRUE);
+				// resparam.res.setReplacement(TARGET_PKG, "bool", "desktop_pagination_autohide", Boolean.TRUE);
 			} catch (final NotFoundException e) {
 				logError(e);
 			}
