@@ -1,0 +1,11 @@
+<resources>
+
+    <string name="app_name">Xperia Home Flags</string>
+    <string name="app_description">Sets:\n
+        - enable_desktop_multi_line_labels\n
+        - enable_stage_icon_labels\n
+        - autoRotate\n
+        - desktop_pagination_autohide
+        </string>
+
+</resources>
