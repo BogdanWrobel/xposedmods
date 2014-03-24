@@ -1,5 +1,8 @@
 package pl.suzume.xposed;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  * Base class for all Xposed modules
  * 
@@ -57,8 +60,11 @@ public abstract class XposedModule {
 	 * @param e
 	 *            Throwable to get message from
 	 */
-	public void logError(final Throwable e) {
-		echo(e.getMessage(), ErrorLevel.ERROR);
+	public void logError(final Throwable t) {
+		final StringWriter sw = new StringWriter();
+		final PrintWriter pw = new PrintWriter(sw);
+		t.printStackTrace(pw);
+		echo(t.getMessage() + "\n" + sw.toString(), ErrorLevel.ERROR);
 	}
 
 	/**
