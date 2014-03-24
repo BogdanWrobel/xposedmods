@@ -1,5 +1,6 @@
 package pl.suzume.xposed.xperiaqshold;
 
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -8,12 +9,14 @@ import java.util.List;
 import pl.suzume.xposed.XposedModule;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
@@ -68,6 +71,7 @@ public class XperiaQsHold extends XposedModule implements IXposedHookLoadPackage
 			collapse.invoke(service);
 			mContext.startActivity(intent);
 		} catch (final Exception e) {
+			logError("Error launching shortcut: " + e.getMessage());
 			Toast.makeText(mContext, "Error launching shortcut: " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
@@ -75,43 +79,102 @@ public class XperiaQsHold extends XposedModule implements IXposedHookLoadPackage
 	@Override
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 		if (PNAME.equals(lpparam.packageName)) {
-			final Method reCreateButtons = XposedHelpers.findMethodExact(TOOLS_MAIN, lpparam.classLoader, "reCreateButtons");
-			final Method create = XposedHelpers.findMethodExact(TOOLS_MAIN, lpparam.classLoader, "create", String.class);
+			try {
+				final Class<?> targetClass = XposedHelpers.findClass(TOOLS_MAIN, lpparam.classLoader);
+				final Method create = XposedHelpers.findMethodExact(targetClass, "create", String.class);
+				final Method reCreateButtons = XposedHelpers.findMethodExact(targetClass, "reCreateButtons");
 
-			XposedBridge.hookMethod(create, new XC_MethodHook() {
-				@Override
-				protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
-					types.add((String) param.args[0]);
-				}
-			});
-
-			XposedBridge.hookMethod(reCreateButtons, new XC_MethodHook() {
-				@Override
-				protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
-					types.clear();
-				}
-
-				@SuppressWarnings("rawtypes")
-				@Override
-				protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-					final LinkedList mButtons = (LinkedList) XposedHelpers.getObjectField(param.thisObject, "mButtons");
-					final Context mContext = (Context) XposedHelpers.getObjectField(param.thisObject, "mContext");
-					int i = 0;
-					for (final Object o : mButtons) {
-						final FrameLayout button = (FrameLayout) o;
-						final String key = types.get(i);
-						button.setOnLongClickListener(new OnLongClickListener() {
-							@Override
-							public boolean onLongClick(final View v) {
-								handle(key, mContext);
-								return true;
-							}
-						});
-						i++;
+				XposedBridge.hookMethod(create, new XC_MethodHook() {
+					@Override
+					protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
+						types.add((String) param.args[0]);
 					}
+				});
+
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+					logInfo("JellyBean ROM found.");
+					handleJellyBean(lpparam, reCreateButtons);
+				} else {
+					logInfo("KitKat ROM found.");
+					handleKitKat(lpparam, reCreateButtons);
 				}
-			});
+			} catch (final NoSuchMethodError nsme) {
+				logError("Method not found, incompatible ROM?");
+				logError(nsme);
+			} catch (final Exception e) {
+				logError(e);
+			}
 		}
+	}
+
+	/**
+	 * Handles KitKat toggles ('with-popup')
+	 * 
+	 * @param lpparam
+	 * @param reCreateButtons
+	 */
+	private void handleKitKat(final LoadPackageParam lpparam, final Member reCreateButtons) {
+		XposedBridge.hookMethod(reCreateButtons, new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
+				types.clear();
+			}
+
+			@SuppressWarnings("rawtypes")
+			@Override
+			protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
+				final LinkedList mButtons = (LinkedList) XposedHelpers.getObjectField(param.thisObject, "mButtons");
+				final Context mContext = (Context) XposedHelpers.getObjectField(param.thisObject, "mContext");
+				int i = 0;
+				for (final Object o : mButtons) {
+					final FrameLayout button = (FrameLayout) o;
+					final String key = types.get(i);
+					XposedHelpers.findAndHookMethod(button.getClass().toString(), lpparam.classLoader, "onLongClick", new XC_MethodReplacement() {
+						@Override
+						protected Object replaceHookedMethod(final MethodHookParam param) throws Throwable {
+							handle(key, mContext);
+							return true;
+						}
+					});
+					i++;
+				}
+			}
+		});
+	}
+
+	/**
+	 * Handles JellyBean toggles ('classic')
+	 * 
+	 * @param lpparam
+	 * @param reCreateButtons
+	 */
+	private void handleJellyBean(final LoadPackageParam lpparam, final Member reCreateButtons) {
+		XposedBridge.hookMethod(reCreateButtons, new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
+				types.clear();
+			}
+
+			@SuppressWarnings("rawtypes")
+			@Override
+			protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
+				final LinkedList mButtons = (LinkedList) XposedHelpers.getObjectField(param.thisObject, "mButtons");
+				final Context mContext = (Context) XposedHelpers.getObjectField(param.thisObject, "mContext");
+				int i = 0;
+				for (final Object o : mButtons) {
+					final FrameLayout button = (FrameLayout) o;
+					final String key = types.get(i);
+					button.setOnLongClickListener(new OnLongClickListener() {
+						@Override
+						public boolean onLongClick(final View v) {
+							handle(key, mContext);
+							return true;
+						}
+					});
+					i++;
+				}
+			}
+		});
 	}
 
 	@Override

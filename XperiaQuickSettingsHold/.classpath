@@ -6,6 +6,6 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="var" path="PROJECTS_ROOT/XposedBridgeApi-30.jar"/>
-	<classpathentry kind="src" path="/XposedCommon"/>
+	<classpathentry exported="true" kind="src" path="/XposedCommon"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

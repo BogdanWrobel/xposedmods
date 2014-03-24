@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pl.suzume.xposed.xperiaqshold"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="2"
+    android:versionName="1.1" >
 
     <uses-sdk
         android:minSdkVersion="16"
-        android:targetSdkVersion="16" />
+        android:targetSdkVersion="19" />
 
     <application
         android:allowBackup="true"
@@ -17,7 +17,7 @@
             android:value="true" />
         <meta-data
             android:name="xposedminversion"
-            android:value="2.0.1*" />
+            android:value="30+" />
         <meta-data
             android:name="xposeddescription"
             android:value="@string/app_description" />
